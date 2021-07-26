@@ -1,0 +1,88 @@
+{% include 'users/base.html' %}
+
+{% block title %}
+	<title>product</title>
+{% endblock %}
+
+{% block css %}
+<style type="text/css">
+	
+</style>
+{% endblock %}
+
+{% block content %}
+ 	<div class="container my-3">
+ 		<div class="row">
+			<div class="col-md-3">
+				<p>Product Category</p>
+				<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+					  <label class="form-check-label" for="flexCheckDefault">
+					    Mobile
+					  </label>
+					</div>
+					<div class="form-check">
+					  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+					  <label class="form-check-label" for="flexCheckChecked">
+					    Laptop
+					  </label>
+					</div>
+				</div>
+			<div class="col-md-9">
+			{% if request.user.is_authenticated and user.user_type == 2 %}
+			{% for product in product %}
+		    <div class="card mb-3">
+		        <div class="card-body">
+		            <div class="row g-0">
+		                <div class="col-md-4">
+		                    <div class="ratio ratio-16x9">
+		                       <a href="{% url 'productdetail' product.id %}"><img src="{{ product.image.url }}" class="rounded featured-image-list" alt="{{post.title}}" style="height: 150px; width: 200px;"></a>
+		                    </div>
+		                </div>
+		                <div class="col-md-5">
+	                        <a href="{% url 'productdetail' product.id %}">
+	                        	<h4>{{ product.name }}</h4>
+	                        </a>
+		                    <h4><span>&#8377;</span> {{ product.price }}</h4>
+		                    <a href="{% url 'add_to_cart' product.id %}"><button class="btn mt-4">Add to cart<span class="fa fa-shopping-cart"></button></a>
+ 							<button class="btn mt-4">Buy Now</button>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+	    	{% endfor %}
+	    	{% elif request.user.is_authenticated and user.user_type == 1 %}
+	    	<table class="table">
+			  <thead>
+			    <tr>
+			      <th scope="col">#</th>
+			      <th scope="col">Product Name</th>
+			      <th scope="col">Image</th>
+			      <th scope="col">price</th>
+			      <th scope="col">Action</th>
+			    </tr>
+			  </thead>
+			  <tbody>
+			  	{% for product in product %}
+			    <tr>
+			      <th scope="row">1</th>
+			      <td>{{product.name}}</td>
+			      <td><img src="{{ product.image.url }}" style="border-radius: 50%; height: 50px; width: 50px;"></td>
+			      <td>{{product.price}}</td>
+			      <td>
+			      	<a href="{% url 'product_update' product.id %}">Update</a>
+			      	<a href="{% url 'product_delete' product.id %}">Delete</a>
+			      </td>
+			    </tr>
+			    {% endfor %}
+			  </tbody>
+			</table>
+	    {% endif %}
+	     {% include 'product/pagination.html' %}
+	 </div>
+    </div>
+
+{% endblock %}
+
+
+

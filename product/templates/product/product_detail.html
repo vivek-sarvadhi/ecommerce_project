@@ -1,0 +1,25 @@
+{% include 'users/base.html' %}
+
+{% block title %}
+	<title>product</title>
+{% endblock %}
+
+{% block content %}
+ 	<div class="container">
+ 		<div class="row">
+ 			<div class="col-md-5">
+ 				<img src="{{product.image.url}}" style="width: 400px; height: 400px;">
+ 				<button class="btn btn-success mt-4">Add to cart</button>
+ 				<button class="btn btn-success mt-4">Buy Now</button>
+ 			</div>
+ 			<div class="col-md-7">
+		 		Name: {{product.name}}<br>
+		 		RS: {{product.price}}<br>
+		 		Description: {{product.desc}}
+		 	</div>
+ 		</div>
+ 	</div>
+{% endblock %}
+
+
+

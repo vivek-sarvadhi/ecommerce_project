@@ -1,0 +1,91 @@
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">E-commerce</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    {%  if request.user.is_authenticated and user.user_type == 1 %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Seller <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="{% url 'product_category' %}">Product category</a>
+          <a class="dropdown-item" href="{% url 'product_category_add' %}">Product category add</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'product' %}">Product</a>
+          <a class="dropdown-item" href="{% url 'product_add' %}">Product add</a>
+        </div>
+      </li>
+    </ul>
+    {%  elif request.user.is_authenticated and user.user_type == 2 %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Customer <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'product' %}">Product</a>
+      </li>
+    </ul>
+    {% else %}
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+    </ul>
+    {% endif %}
+    <div class="flex-grow-1 d-flex">
+      <form class="form-inline flex-nowrap bg-light mx-0 mx-lg-auto rounded p-1" method="GET">
+        <input class="form-control mr-sm-2" type="text" value="{{request.GET.q}}" name="q" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      </form>
+    </div>
+    {% if user.is_authenticated %}
+      {% if user.user_type == 2 %}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'mycart' %}"><span class="fa fa-shopping-cart"></span>Cart</a>
+          </li>
+        </ul>
+      {% endif %}
+      <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span class="fas fa-user"></span> 
+            {{request.user}}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                  <a class="dropdown-item" href="{% url 'profile' request.user.id %}">Profile</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'change_password' %}">Change password</a>
+                </li>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+             </ul>
+        </li>
+       </ul>
+      {% else %}
+        <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}"><span class="fas fa-user"></span>Sign - Up</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}"><span class="fas fa-user"></span>Sign - In</a>
+          </li>
+      </ul>
+      {% endif %}
+  </div>
+</nav>

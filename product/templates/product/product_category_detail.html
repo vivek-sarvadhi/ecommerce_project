@@ -1,0 +1,30 @@
+{% include 'users/base.html' %}
+
+
+{% block content %}
+	<div class="container">
+		<table class="table">
+		  <thead class="thead-dark">
+		    <tr>
+		      <th scope="col">#</th>
+		      <th scope="col">Name</th>
+		      <th scope="col">Description</th>
+		      <th scope="col">Action</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		  	{% for i in productcategory %}
+		    <tr>
+		      <th scope="row">1</th>
+		      <td>{{i.name}}</td>
+		      <td>{{i.desc|truncatechars:50}}</td>
+		      <td>
+		      	<a href="{% url 'product_category_update' i.id %}">Update</a>
+		      	<a href="{% url 'product_category_delete' i.id %}">Delete</a>
+		      </td>
+		    </tr>
+		    {% endfor %}
+		  </tbody>
+		</table>
+	</div>
+{% endblock %}
