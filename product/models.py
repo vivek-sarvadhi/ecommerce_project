@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from users.models import CustomUser
+from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 
 class ProductCategory(models.Model):
@@ -21,7 +22,7 @@ class Product(models.Model):
 	desc = models.TextField()
 	# slug = models.SlugField(max_length=100, unique=True)
 	image = models.ImageField(upload_to='product_image/', blank=True, null=True)
-	product_category_id = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
+	product_category_id = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, blank=True)
 	price = models.IntegerField()
 	is_delete = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -63,7 +64,7 @@ ORDER_STATUS = (
 
 
 class Order(models.Model):
-	cart = models.OneToOneField(Cart, on_delete=models.CASCADE)
+	cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
 	ordered_by = models.CharField(max_length=200)
 	shipping_address = models.CharField(max_length=200)
 	mobile = models.CharField(max_length=10)
@@ -79,4 +80,11 @@ class Order(models.Model):
 
 	def __str__(self):
 		return "order: " + str(self.id)
+
+
+class Rating(models.Model):
+	product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='ratings')
+	user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+	review = models.CharField(max_length=100, null=True, blank=True)
 

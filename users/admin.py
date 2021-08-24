@@ -1,6 +1,6 @@
 from django.contrib import admin
 # from django.contrib.auth.admin import UserAdmin
-from users.models import CustomUser
+from users.models import CustomUser, CustomUserToken
 # Register your models here.
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class CustomUserAdmin(admin.ModelAdmin):
     ordering = ('email',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomUserToken)

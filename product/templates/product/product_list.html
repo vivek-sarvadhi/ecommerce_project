@@ -15,36 +15,34 @@
  		<div class="row">
 			<div class="col-md-3">
 				<p>Product Category</p>
+				{% for product_category in product_categorys %}
 				<div class="form-check">
-					  <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-					  <label class="form-check-label" for="flexCheckDefault">
-					    Mobile
-					  </label>
-					</div>
-					<div class="form-check">
-					  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
-					  <label class="form-check-label" for="flexCheckChecked">
-					    Laptop
-					  </label>
-					</div>
+					<input class="form-check-input" type="checkbox" value="{{product_category.id}}" id="category">
+					<label class="form-check-label" for="flexCheckDefault">
+					{{ product_category.name }}
+					</label>	
 				</div>
-			<div class="col-md-9">
+				{% endfor %}
+			</div>
+			<div class="col-md-9" id="cardid">
 			{% if request.user.is_authenticated and user.user_type == 2 %}
-			{% for product in product %}
+			{% for product in products %}
 		    <div class="card mb-3">
 		        <div class="card-body">
-		            <div class="row g-0">
+		            <div class="row g-0" >
 		                <div class="col-md-4">
 		                    <div class="ratio ratio-16x9">
-		                       <a href="{% url 'productdetail' product.id %}"><img src="{{ product.image.url }}" class="rounded featured-image-list" alt="{{post.title}}" style="height: 150px; width: 200px;"></a>
+		                       <a href="{% url 'productdetail' product.product.id %}"><img src="{{ product.product.image.url }}" class="rounded featured-image-list" alt="{{post.title}}" style="height: 150px; width: 200px;"></a>
 		                    </div>
 		                </div>
 		                <div class="col-md-5">
-	                        <a href="{% url 'productdetail' product.id %}">
-	                        	<h4>{{ product.name }}</h4>
+	                        <a href="{% url 'productdetail' product.product.id %}">
+	                        	<h4>{{ product.product.name }}</h4>
 	                        </a>
-		                    <h4><span>&#8377;</span> {{ product.price }}</h4>
-		                    <a href="{% url 'add_to_cart' product.id %}"><button class="btn mt-4">Add to cart<span class="fa fa-shopping-cart"></button></a>
+		                    <h4><span>&#8377;</span> {{ product.product.price }}</h4>
+		                    <h5>{{ product.product.product_category_id.name }}</h5>
+		                    <h5>{% if not product.rating == None %} {{ product.rating }} {% endif %}</h5>
+		                    <a href="{% url 'add_to_cart' product.product.id %}"><button class="btn mt-4">Add to cart<span class="fa fa-shopping-cart"></button></a>
  							<button class="btn mt-4">Buy Now</button>
 		                </div>
 		            </div>
@@ -63,15 +61,15 @@
 			    </tr>
 			  </thead>
 			  <tbody>
-			  	{% for product in product %}
+			  	{% for product in products %}
 			    <tr>
 			      <th scope="row">1</th>
-			      <td>{{product.name}}</td>
-			      <td><img src="{{ product.image.url }}" style="border-radius: 50%; height: 50px; width: 50px;"></td>
-			      <td>{{product.price}}</td>
+			      <td>{{product.product.name}}</td>
+			      <td><img src="{{ product.product.image.url }}" style="border-radius: 50%; height: 50px; width: 50px;"></td>
+			      <td>{{product.product.price}}</td>
 			      <td>
-			      	<a href="{% url 'product_update' product.id %}">Update</a>
-			      	<a href="{% url 'product_delete' product.id %}">Delete</a>
+			      	<a href="{% url 'product_update' product.product.id %}">Update</a>
+			      	<a href="{% url 'product_delete' product.product.id %}">Delete</a>
 			      </td>
 			    </tr>
 			    {% endfor %}
@@ -83,6 +81,94 @@
     </div>
 
 {% endblock %}
+
+
+{% block js %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('.form-check-input').change(function(e){
+				e.preventDefault();
+				// var category = { 'product_ids': []}
+				// hello = $(this).is(":checked")
+				// console.log(hello)
+				if($(this).is(":checked", true)){
+					var category = $(this).val();
+				}
+				console.log(category)
+				$.ajax({
+					type: 'GET',
+					url: "{% url 'product_filter' %}",
+					data: {'category':category},
+					success: function(response){
+						$('#cardid').empty()
+						var tbody = $('tbody');
+						var product1 = Object.values(response.product)
+						console.log(product1)
+						if(product1.length != 0){
+							for(i=0; i < product1.length; i++){
+								var id = product1[i].id
+								var row = $(`<div class="card mb-3">`);
+								var data = $(`<div class="row g-0">
+												<div class="col-md-4">
+								                    <div class="ratio ratio-16x9">
+								                       <a href="/product/product/${id}"><img src="/media/${product1[i].image}" class="rounded featured-image-list" alt="{{post.title}}" style="height: 150px; width: 200px;"></a>
+								                    </div>
+								                </div>
+								                <div class="col-md-5">
+							                        <a href="">
+							                        	<h4>${product1[i].name}</h4>
+							                        </a>
+								                    <h4><span>&#8377;</span>${product1[i].price}</h4>
+								                    <h5>${product1[i].product_category_id.name}</h5>
+								                    <h5></h5>
+								                    <a href=""><button class="btn mt-4">Add to cart<span class="fa fa-shopping-cart"></button></a>
+						 							<button class="btn mt-4">Buy Now</button>
+								                </div>
+								              </div>`);
+								$(row).append(data);
+								$('#cardid').append(row)
+							}
+						}else{
+							$('#cardid').append(`
+								{% if request.user.is_authenticated and user.user_type == 2 %}
+								{% for product in products %}
+							    <div class="card mb-3">
+							        <div class="card-body">
+							            <div class="row g-0" >
+							                <div class="col-md-4">
+							                    <div class="ratio ratio-16x9">
+							                       <a href="{% url 'productdetail' product.product.id %}"><img src="{{ product.product.image.url }}" class="rounded featured-image-list" alt="{{post.title}}" style="height: 150px; width: 200px;"></a>
+							                    </div>
+							                </div>
+							                <div class="col-md-5">
+						                        <a href="{% url 'productdetail' product.product.id %}">
+						                        	<h4>{{ product.product.name }}</h4>
+						                        </a>
+							                    <h4><span>&#8377;</span> {{ product.product.price }}</h4>
+							                    <h5>{{ product.product.product_category_id.name }}</h5>
+							                    <h5>{% if not product.rating == None %} {{ product.rating }} {% endif %}</h5>
+							                    <a href="{% url 'add_to_cart' product.product.id %}"><button class="btn mt-4">Add to cart<span class="fa fa-shopping-cart"></button></a>
+					 							<button class="btn mt-4">Buy Now</button>
+							                </div>
+							            </div>
+							        </div>
+							    </div>
+						    	{% endfor %}
+						    	{% endif %}
+	     						{% include 'product/pagination.html' %}
+							`)
+						}
+					},
+					error: function(response){
+						console.log(response)
+					}
+				})
+			})
+		})
+	</script>
+{% endblock %}
+
 
 
 

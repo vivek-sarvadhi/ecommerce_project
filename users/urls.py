@@ -1,9 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from users.views import IndexView, RegisterView, LoginView, ProfileView, PasswordChangeView
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
+# from users.users_api.views import IndexAPIView
 
 urlpatterns = [
+	path('api/', include('users.users_api.urls')),
 	path('index/', IndexView.as_view(), name="index"),
 	path('register/', RegisterView.as_view(), name="register"),
 	path('profile/<int:pk>', ProfileView.as_view(), name="profile"),
@@ -24,4 +26,7 @@ urlpatterns = [
 	path('password-reset-complete/',
 		 auth_views.PasswordResetCompleteView.as_view(template_name='users/password_reset_complete.html'),
 		 name='password_reset_complete'),
+
+
+	# path('apiindex/', IndexAPIView.as_view(), name="index_api"),
 ]

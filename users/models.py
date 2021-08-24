@@ -58,6 +58,16 @@ class CustomUser(AbstractUser):
 		return self.email
 
 
+class CustomUserToken(models.Model):
+    user = models.ForeignKey(CustomUser, related_name="customuser", on_delete=models.CASCADE)
+    token = models.CharField(null=True, max_length=500)
+    created_at = models.DateTimeField(null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(null=True, auto_now=True)
+
+    def __str__(self):
+        return str(self.user)
+
+
 
 
 

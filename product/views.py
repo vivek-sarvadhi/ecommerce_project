@@ -1,8 +1,11 @@
+# from django.http.response import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from product.models import ProductCategory, Product, Cart, CartProduct, Order
+from product.models import ProductCategory, Product, Cart, CartProduct, Order, Rating
 from product.forms import ProductCategoryForm, ProductForm, CheckOutForm
 from django.views.generic import View, CreateView, ListView, DeleteView, UpdateView, DetailView, TemplateView
 from django.urls import reverse, reverse_lazy
+from django.db.models import Avg
+from django.http import HttpResponse, JsonResponse
 
 # Create your views here.
 class ProductCategoryDetailView(ListView):
@@ -51,8 +54,8 @@ class ProductCategoryDeleteView(DeleteView):
 class ProductListForm(ListView):
     model = Product
     template_name = "product/product_list.html"
-    context_object_name = "product"
-    paginate_by = 3
+    # context_object_name = "product"
+    paginate_by = 4
     queryset = Product.objects.all()
 
     def get_queryset(self):
@@ -62,6 +65,20 @@ class ProductListForm(ListView):
             object_list = object_list.filter(name__icontains=name)
         return object_list
 
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        object_list = context['object_list']
+        products = []
+        for i in object_list:
+            dict1 = {}
+            avg = i.ratings.all().aggregate(Avg('rating'))
+            dict1['rating'] = avg['rating__avg']
+            dict1['product'] = i
+            products.append(dict1)
+        context['products'] = products
+        context['product_categorys'] = ProductCategory.objects.all()
+        return context
+
 
 class ProductDetailForm(DetailView):
     template_name = "product/product_detail.html"
@@ -69,6 +86,17 @@ class ProductDetailForm(DetailView):
     def get_object(self):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Product, id=id_)
+
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        object_list = context['object']
+        dict1 = {}
+        avg = object_list.ratings.all().aggregate(Avg('rating'))
+        context['rating'] = avg['rating__avg']
+        context['product'] = object_list
+        context['rating_list'] = object_list.ratings.all()
+        print(context)
+        return context
 
 
 class ProductAddForm(CreateView):
@@ -101,7 +129,7 @@ class ProductUpdateForm(UpdateView):
 class ProductDeleteForm(DeleteView):
     template_name = 'product/product_delete.html'
 
-    def get_object(self):
+    def get_object(self, id):
         id_ = self.kwargs.get("id")
         return get_object_or_404(Product, id=id_)
 
@@ -238,7 +266,18 @@ class CheckOutView(CreateView):
 
 
 
-
+def product_filter(request):
+    # if request.method == "GET" and request.is_ajax():
+    #     list1 = []
+    new1 = request.GET.get('category')
+    product = Product.objects.filter(product_category_id=new1).values('id','image','name','price','product_category_id')
+    print(product)
+        # context = {
+        #     'product_info':product
+        # }
+        # print(context)
+    return JsonResponse({'product': list(product)})
+    # return JsonResponse({"success":False}, status=400)
 
 
 # class ProductDetailForm(ListView):

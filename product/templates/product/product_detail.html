@@ -15,7 +15,17 @@
  			<div class="col-md-7">
 		 		Name: {{product.name}}<br>
 		 		RS: {{product.price}}<br>
-		 		Description: {{product.desc}}
+		 		{% if not rating == none %} Average Rating: {{rating}} <br>{% endif %}
+		 		Description: {{product.desc}}<br>
+				<h3>Rating & Review</h3>
+				{% for rating_list in rating_list %}
+				<div class="card">
+					
+					User: {{ rating_list.user }} <br>
+					Rating: {{ rating_list.rating }} <br>
+					Review: {{ rating_list.review }} <br>
+				</div>
+				{% endfor %}
 		 	</div>
  		</div>
  	</div>

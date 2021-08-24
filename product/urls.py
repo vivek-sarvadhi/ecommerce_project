@@ -1,15 +1,18 @@
-from django.urls import path
+from django.urls import path, include
 from product.views import (ProductCategoryDetailView, ProductListForm, 
 							ProductCategoryAddView, ProductCategoryUpdateView, 
 							ProductCategoryDeleteView, ProductDetailForm, 
 							ProductAddForm, ProductUpdateForm, 
 							ProductDeleteForm, AddToCartView,
 							MyCartView, ManageCartView, EmptyCartView,
-							CheckOutView,
+							CheckOutView, product_filter,
 
 						)
 
 urlpatterns = [
+
+	path('api/', include('product.product_api.urls')),
+
 	path('productcategory/', ProductCategoryDetailView.as_view(), name="product_category"),
 	path('productcategoryadd/', ProductCategoryAddView.as_view(), name="product_category_add"),
 	path('productcategoryupdate/<int:id>/', ProductCategoryUpdateView.as_view(), name="product_category_update"),
@@ -28,4 +31,6 @@ urlpatterns = [
 	path('emptycart/', EmptyCartView.as_view(), name="empty_cart"),
 
 	path('checkout/', CheckOutView.as_view(), name="check_out"),
+
+	path('product_filter', product_filter, name='product_filter')
 ]
