@@ -6,6 +6,8 @@ from django.views.generic import View, CreateView, ListView, DeleteView, UpdateV
 from django.urls import reverse, reverse_lazy
 from django.db.models import Avg
 from django.http import HttpResponse, JsonResponse
+#Hello
+
 
 # Create your views here.
 class ProductCategoryDetailView(ListView):
